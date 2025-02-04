@@ -1,0 +1,165 @@
+
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap');
+ @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+/* General Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: ;
+    margin-bottom: 80px; /* Space for the fixed footer */
+    color: #333;
+}
+
+/* Sections */
+section {
+    display: none;
+}
+
+#dashboard {
+    display: block;
+}
+
+/* Navigation Bar */
+.navbar {
+    background-color: #007bff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar.fixed-bottom {
+    background-color: ;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.nav-link {
+    font-size: 13px;
+    color: brown;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: #cce5ff;
+}
+
+/* Cards */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+}
+
+.dashboard-card:hover {
+    transform: scale(1.05);
+}
+
+.dashboard-card h3 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.dashboard-card p {
+    font-size: 1.2rem;
+    color: #555;
+}
+
+/* Tables */
+.table {
+    background-color: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 2px;
+    padding: 0px;
+}
+
+.table th {
+    background-color: #007bff;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.table td {
+    color: #333;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+/* Forms */
+input,
+select {
+    border-radius: 25px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    outline: none;
+    width: 100%;
+}
+
+input:focus,
+select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Buttons */
+.btn {
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #bb2d3b;
+}
+
+/* Unique ID Display */
+#unique-id-display {
+    display: none;
+    background-color: yellow;
+    color: black;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* Footer */
+.footer {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    font-size: 14px;
+}

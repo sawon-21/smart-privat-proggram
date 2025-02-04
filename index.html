@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-light">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Smart Private Program</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('dashboard')">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('add-student')">Add Student</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('details')">Students</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('payment')">Payments</a>
+                    </li>
+                    <li><a href="admin.html" style="color:blue">Admin</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard -->
+    <section id="dashboard" class="container my-5 pt-5">
+        <h2 class="text-center mb-4">Dashboard</h2>
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="card text-white bg-info">
+                    <div class="card-body">
+                        <h4>Total Students</h4>
+                        <p id="total-students">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <h4>Total Income</h4>
+                        <p id="total-income">0 TK</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card text-white bg-warning">
+                    <div class="card-body">
+                        <h4>Pending Payments</h4>
+                        <p id="pending-payments">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add Student -->
+    <section id="add-student" class="container my-5 pt-5" style="display: none;">
+        <h2 class="text-center mb-4">Add New Student</h2>
+        <form id="student-form" class="mt-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="text" id="name" class="form-control mb-3" placeholder="Full Name" required>
+                </div>
+                <div class="col-md-6">
+                    <select id="department" class="form-select mb-3" required>
+                        <option value="" disabled selected>Select Department</option>
+                        <option value="CSE">Computer Science</option>
+                        <option value="EEE">Electronics</option>
+                        <option value="Mechanical">Mechanical</option>
+                        <option value="Civil">Civil</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <select id="semester" class="form-select mb-3" required>
+                        <option value="" disabled selected>Select Semester</option>
+                        <option value="1st">1st Semester</option>
+                        <option value="2nd">2nd Semester</option>
+                        <option value="3rd">3rd Semester</option>
+                        <option value="4th">4th Semester</option>
+                        <option value="5th">5th Semester</option>
+                        <option value="6th">6th Semester</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <select id="batch" class="form-select mb-3">
+                        <option value="N-20">N-20</option>
+                        <option value="N-21">N-21</option>
+                    </select>
+                </div>
+            </div>
+            <hr>
+            <br>
+            <button type="button" class="btn btn-primary w-100" onclick="addStudent()">Add Student</button>
+        </form>
+        <br>
+        <hr>
+        <div id="unique-id-display" class="mt-3" style="display: none;">
+            <h5>Your Unique ID: <span id="generated-unique-id"></span></h5>
+        </div>
+    </section>
+
+    <!-- Students List -->
+    <section id="details" class="container my-5 pt-5" style="display: none;">
+        <h2 class="text-center mb-4">Students List</h2>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Semester</th>
+                    <th>Unique ID</th>
+                    <th>Batch Name</th>
+                    <th>Payment Status</th>
+                </tr>
+            </thead>
+            <tbody id="student-list"></tbody>
+        </table>
+    </section>
+
+    <!-- Payments -->
+    <section id="payment" class="container my-5 pt-5" style="display: none;">
+        <h2 class="text-center mb-4">Payments</h2>
+        <form>
+            <input type="text" id="payment-id" class="form-control mb-3" placeholder="Enter Unique ID">
+            <input type="number" id="amount" class="form-control mb-3" placeholder="Payment Amount">
+            <button type="button" class="btn btn-success w-100" onclick="makePayment()">Make Payment</button>
+        </form>
+    </section>
+
+    <!-- Footer Navbar -->
+    <nav class="navbar navbar-light bg-light fixed-bottom">
+        <div class="container d-flex justify-content-around">
+            <a href="#" class="nav-link text-center" onclick="showSection('dashboard')">
+                <i class="fas fa-home fa-lg"></i><br>Dashboard
+            </a>
+            <a href="#" class="nav-link text-center" onclick="showSection('add-student')">
+                <i class="fas fa-user-plus fa-lg"></i><br>Add Student
+            </a>
+            <a href="#" class="nav-link text-center" onclick="showSection('details')">
+                <i class="fas fa-users fa-lg"></i><br>Students
+            </a>
+            <a href="#" class="nav-link text-center" onclick="showSection('payment')">
+                <i class="fas fa-money-bill-wave fa-lg"></i><br>Payments
+            </a>
+        </div>
+    </nav>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script>
+        function showSection(section) {
+            const sections = ['dashboard', 'add-student', 'details', 'payment'];
+            sections.forEach(sec => {
+                document.getElementById(sec).style.display = 'none';
+            });
+            document.getElementById(section).style.display = 'block';
+        }
+    </script>
+    <!-- Firebase and custom scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <script src="script.js" type="module"></script>
+</body>
+</html>
