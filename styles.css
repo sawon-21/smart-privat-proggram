@@ -163,3 +163,123 @@ select:focus {
     width: 100%;
     font-size: 14px;
 }
+    .search-bar {
+      margin-bottom: 20px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+    }
+    .search-bar input {
+      border-radius: 20px;
+      padding: 8px 18px 8px 38px; /* Add padding for the icon */
+      border: 2px solid #ddd;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+    .search-bar input:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+      padding-left: 50px; /* Expand padding on focus */
+    }
+    .search-bar .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+      transition: all 0.3s ease;
+    }
+    .search-bar input:focus + .search-icon {
+      color: #007bff; /* Change icon color on focus */
+      left: 20px; /* Move icon slightly on focus */
+    }
+        .filter-bar {
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      align-items: center;
+
+      padding: 10px;
+      border-radius: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .filter-bar label {
+      margin-bottom: 0;
+      font-weight: bold;
+      color: #555;
+    }
+    .filter-bar select {
+      border-radius: 20px;
+      padding: 8px 15px;
+      border: 2px solid #ddd;
+      transition: all 0.3s ease;
+      appearance: none; /* Remove default arrow */
+      background-color: white;
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 12px;
+    }
+    .filter-bar select:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+    }
+    .filter-icon {
+      color: #007bff;
+      font-size: 20px;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+        .download-pdf {
+      margin-bottom: 20px;
+      text-align: right;
+    }
+    .download-pdf button {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .download-pdf button:hover {
+      background-color: #c823;
+    }
+    /* Install notification styling */
+.install-notification {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  padding: 1em;
+  z-index: 10000;
+}
+
+.install-notification p {
+  margin: 0;
+  display: inline;
+}
+
+.install-notification button {
+  margin-left: 10px;
+}
+        footer {
+            background-color: #222;
+            color: #fff;
+            padding: 1px 1px;
+            text-align: center;
+            font-size: 11px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+

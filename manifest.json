@@ -1,0 +1,16 @@
+{
+  "name": "SPP Student Management System ",
+  "short_name": "Student Management System",
+  "description": " Student Management System ",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "white",
+  "theme_color": "#333333",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

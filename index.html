@@ -10,9 +10,18 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <!-- Custom Styles -->
     <link rel="stylesheet" href="styles.css">
+      <!-- jsPDF Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+      <link rel="manifest" href="manifest.json">
 </head>
 <body class="bg-light">
-
+    <!-- Install Notification Banner -->
+    <div id="installNotification" class="install-notification" style="display: none;">
+        <p>Install this app for a better experience! 😊</p>
+        <button id="installBtn" class="btn btn-primary">Install</button>
+        <button onclick="document.getElementById('installNotification').style.display = 'none';" class="btn btn-secondary">Dismiss</button>
+    </div>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
         <div class="container">
@@ -101,8 +110,9 @@
                 </div>
                 <div class="col-md-6">
                     <select id="batch" class="form-select mb-3">
-                        <option value="N-20">N-20</option>
-                        <option value="N-21">N-21</option>
+      <option value="N-20">N-20</option>
+      <option value="N-21">N-21</option>
+      <option value="N-22">N-22</option>
                     </select>
                 </div>
             </div>
@@ -119,7 +129,128 @@
 
     <!-- Students List -->
     <section id="details" class="container my-5 pt-5" style="display: none;">
-        <h2 class="text-center mb-4">Students List</h2>
+<!-- Search Bar -->
+  <div class="search-bar">
+    <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+    <i class="fas fa-search search-icon"></i> <!-- Search Icon -->
+  </div>
+  
+    <!-- Filter Bar -->
+  <div class="filter-bar">
+    <i class="fas fa-filter filter-icon"></i> <!-- Filter Icon -->
+    <label for="roleFilter">Filter by Batch:</label>
+    <select id="roleFilter" class="form-select">
+      <option value="">All</option>
+      <option value="N-20">N-20</option>
+      <option value="N-21">N-21</option>
+      <option value="N-22">N-22</option>
+    </select>
+  </div>
+  <script>
+      // Filter functionality
+  const roleFilter = document.getElementById('roleFilter');
+  const searchInput = document.getElementById('searchInput');
+
+  roleFilter.addEventListener('change', filterTable);
+  searchInput.addEventListener('input', filterTable);
+
+  function filterTable() {
+    const roleValue = roleFilter.value.toLowerCase();
+    const searchValue = searchInput.value.toLowerCase();
+    const rows = document.querySelectorAll('#student-list tr');
+
+    rows.forEach(row => {
+      const batchCell = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
+      const rowText = row.textContent.toLowerCase();
+
+      const matchesRole = roleValue === '' || batchCell === roleValue;
+      const matchesSearch = rowText.includes(searchValue);
+
+      if (matchesRole && matchesSearch) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+</script>
+  
+<script>
+  document.getElementById('searchInput').addEventListener('input', function() {
+    const searchValue = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#student-list tr');
+
+    rows.forEach(row => {
+      const rowText = row.textContent.toLowerCase();
+      if (rowText.includes(searchValue)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  });
+</script>
+        <h2 class="text-center mb-4">Students List</h2>   <!-- Download PDF Button -->
+  <div class="download-pdf">
+    <button onclick="downloadPDF()">
+      <i class="fas fa-file-pdf"></i> Download PDF
+    </button>
+  </div>
+  <script>
+// Function to download PDF
+function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Get current date and time
+    const now = new Date();
+    const formattedDate = now.toLocaleDateString('en-GB').replace(/\//g, '-'); // Format as DD-MM-YYYY
+    const formattedTime = now.toLocaleTimeString('en-GB'); // HH:MM:SS format
+    const filename = `${formattedDate}.pdf`;
+
+    // Add title
+    doc.setFont("helvetica", "bold"); // Typography for title
+    doc.setFontSize(18);
+    doc.text("Student List", 10, 10);
+    doc.setFontSize(8);
+doc.text("Mehedi Al Hasan Sawon ", 15, 25);
+    // Add date and time
+    doc.setFont("times", "normal"); // Typography for date
+    doc.setFontSize(12);
+    doc.text(`Date: ${formattedDate}`, 10, 20);
+    doc.text(`Time: ${formattedTime}`, 10, 30);
+
+    // Extract table data
+    const table = document.querySelector('.table');
+    const headers = [];
+    const rows = [];
+
+    // Extract headers
+    table.querySelectorAll('thead th').forEach(header => {
+        headers.push(header.innerText);
+    });
+
+    // Extract rows
+    table.querySelectorAll('tbody tr').forEach(row => {
+        const rowData = [];
+        row.querySelectorAll('td').forEach(cell => {
+            rowData.push(cell.innerText);
+        });
+        rows.push(rowData);
+    });
+
+    // Generate table
+    doc.autoTable({
+        head: [headers], // Table header
+        body: rows, // Table body
+        startY: 40, // Start position after the date and time
+    });
+
+
+    // Save PDF with date as filename
+    doc.save(filename);
+}
+  </script>
         <table class="table table-bordered table-hover">
             <thead>
                 <tr>
@@ -179,5 +310,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
     <script src="script.js" type="module"></script>
+    <script src="app.js"></script>
 </body>
 </html>
