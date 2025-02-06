@@ -5,101 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Student Management</title>
 
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
         body {
             background-color: #f4f7fc;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
+            font-family: 'Poppins', sans-serif;
         }
-        h2 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            text-align: center;
+        .container {
+            margin-top: 30px;
         }
-        .table-container {
-            width: 100%;
-            max-width: 1000px;
-            overflow-x: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .table {
             background: white;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
         }
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        th {
+        .table th {
             background-color: #0066cc;
             color: white;
         }
-        input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            text-align: center;
-        }
-        .readonly {
-            background-color: #f0f0f0;
-            cursor: not-allowed;
-        }
-        .update-btn, .delete-btn {
-            padding: 6px 12px;
-            border: none;
-            color: white;
-            cursor: pointer;
+        .btn-action {
             font-size: 14px;
-            margin: 2px;
+            padding: 5px 10px;
         }
-        .update-btn {
-            background-color: #28a745;
-        }
-        .update-btn:hover {
-            background-color: #218838;
-        }
-        .delete-btn {
-            background-color: #dc3545;
-        }
-        .delete-btn:hover {
-            background-color: #c82333;
-        }
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            table {
-                font-size: 14px;
-            }
-            th, td {
-                padding: 8px;
-            }
-            .update-btn, .delete-btn {
-                font-size: 12px;
-                padding: 4px 8px;
-            }
+        .modal-header {
+            background-color: #0066cc;
+            color: white;
         }
     </style>
 </head>
 <body>
 
-    <h2>Admin Panel - Manage Students</h2>
+<div class="container">
+         <a href="index.html"><button class="nts" role="button">Back ☜</button></a>
+    <h2 class="text-center mb-4">Admin Panel - Manage Students</h2>
 
-    <div class="table-container">
-        <table>
+    <div class="table-responsive">
+        <table class="table table-bordered text-center">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -114,91 +62,153 @@
             <tbody id="students-table"></tbody>
         </table>
     </div>
+</div>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getDatabase, ref, get, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+<!-- Update Modal -->
+<div class="modal fade" id="updateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Student</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="update-id">
+                <div class="mb-3">
+                    <label>Name:</label>
+                    <input type="text" class="form-control" id="update-name">
+                </div>
+                <div class="mb-3">
+                    <label>Department:</label>
+                    <input type="text" class="form-control" id="update-department">
+                </div>
+                <div class="mb-3">
+                    <label>Semester:</label>
+                    <input type="text" class="form-control" id="update-semester">
+                </div>
+                <div class="mb-3">
+                    <label>Batch:</label>
+                    <input type="text" class="form-control" id="update-batch">
+                </div>
+                <div class="mb-3">
+                    <label>Payment Status:</label>
+          <input type="number"class="form-control" id="update-paymentStatus">
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="saveUpdate()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyD8SUCRABkNj7cC9_z7beoWVdeivE2vFKs",
-            authDomain: "admition-52c47.firebaseapp.com",
-            databaseURL: "https://admition-52c47-default-rtdb.firebaseio.com",
-            projectId: "admition-52c47",
-            storageBucket: "admition-52c47.appspot.com",
-            messagingSenderId: "1065012142592",
-            appId: "1:1065012142592:web:ea76b942aba95418eb6ee5",
-            measurementId: "G-3N3F8DJ8FC"
-        };
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this student?</p>
+                <input type="hidden" id="delete-id">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+<!-- Firebase SDK -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, get, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-        // Fetch and Display Students
-        function loadStudents() {
-            onValue(ref(db, "students"), (snapshot) => {
-                let students = snapshot.val() || {};
-                let table = document.getElementById("students-table");
-                table.innerHTML = "";
+    const firebaseConfig = {
+        apiKey: "AIzaSyD8SUCRABkNj7cC9_z7beoWVdeivE2vFKs",
+        authDomain: "admition-52c47.firebaseapp.com",
+        databaseURL: "https://admition-52c47-default-rtdb.firebaseio.com",
+        projectId: "admition-52c47",
+        storageBucket: "admition-52c47.appspot.com",
+        messagingSenderId: "1065012142592",
+        appId: "1:1065012142592:web:ea76b942aba95418eb6ee5",
+        measurementId: "G-3N3F8DJ8FC"
+    };
 
-                Object.keys(students).forEach((id) => {
-                    let student = students[id];
-                    let row = `
-                        <tr>
-                            <td><input type="text" value="${student.name}" id="name-${id}"></td>
-                            <td><input type="text" value="${student.department}" id="department-${id}"></td>
-                            <td><input type="text" value="${student.semester}" id="semester-${id}"></td>
-                            <td><input type="text" value="${student.batch}" id="batch-${id}"></td>
-                            <td>${student.uniqueId}</td>
-                            <td><input type="text" value="${student.paymentStatus}" id="payment-${id}" class="readonly" readonly></td>
-                            <td>
-                                <button class="update-btn" onclick="updateStudent('${id}')">Update</button>
-                                <button class="delete-btn" onclick="deleteStudent('${id}')">Delete</button>
-                            </td>
-                        </tr>
-                    `;
-                    table.innerHTML += row;
-                });
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    function loadStudents() {
+        onValue(ref(db, "students"), (snapshot) => {
+            let students = snapshot.val() || {};
+            let table = document.getElementById("students-table");
+            table.innerHTML = "";
+
+            Object.keys(students).forEach((id) => {
+                let student = students[id];
+                let row = `
+                    <tr>
+                        <td>${student.name}</td>
+                        <td>${student.department}</td>
+                        <td>${student.semester}</td>
+                        <td>${student.batch}</td>
+                        <td>${student.uniqueId}</td>
+                        <td>${student.paymentStatus}</td>
+                        <td>
+                            <button class="btn btn-success btn-action" onclick="openUpdateModal('${id}', '${student.name}', '${student.department}', '${student.semester}', '${student.batch}', '${student.paymentStatus}')">Update</button>
+                            <button class="btn btn-danger btn-action" onclick="openDeleteModal('${id}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                table.innerHTML += row;
             });
-        }
+        });
+    }
 
-        // Update Student Details (Except Payment)
-        window.updateStudent = function (id) {
-            let updatedName = document.getElementById(`name-${id}`).value.trim();
-            let updatedDepartment = document.getElementById(`department-${id}`).value.trim();
-            let updatedSemester = document.getElementById(`semester-${id}`).value.trim();
-            let updatedBatch = document.getElementById(`batch-${id}`).value.trim();
+    window.openUpdateModal = function (id, name, department, semester, batch, paymentStatus) {
+        document.getElementById("update-id").value = id;
+        document.getElementById("update-name").value = name;
+        document.getElementById("update-department").value = department;
+        document.getElementById("update-semester").value = semester;
+        document.getElementById("update-batch").value = batch;
+        document.getElementById("update-paymentStatus").value = paymentStatus;
+        new bootstrap.Modal(document.getElementById("updateModal")).show();
+    };
 
-            if (!updatedName || !updatedDepartment || !updatedSemester || !updatedBatch) {
-                alert("All fields except payment must be filled!");
-                return;
-            }
-
-            update(ref(db, "students/" + id), {
-                name: updatedName,
-                department: updatedDepartment,
-                semester: updatedSemester,
-                batch: updatedBatch
-            }).then(() => {
-                alert("Student Updated!");
-            });
+    window.saveUpdate = function () {
+        let id = document.getElementById("update-id").value;
+        let updatedData = {
+            name: document.getElementById("update-name").value.trim(),
+            department: document.getElementById("update-department").value.trim(),
+            semester: document.getElementById("update-semester").value.trim(),
+            batch: document.getElementById("update-batch").value.trim(),
+            paymentStatus: document.getElementById("update-paymentStatus").value
         };
+        update(ref(db, "students/" + id), updatedData).then(() => {
+            let modal = bootstrap.Modal.getInstance(document.getElementById("updateModal"));
+            modal.hide();
+            loadStudents();
+        });
+    };
 
-        // Delete Student
-        window.deleteStudent = function (id) {
-            if (!confirm("Are you sure you want to delete this student?")) return;
+    window.openDeleteModal = function (id) {
+        document.getElementById("delete-id").value = id;
+        new bootstrap.Modal(document.getElementById("deleteModal")).show();
+    };
 
-            remove(ref(db, "students/" + id)).then(() => {
-                alert("Student Deleted!");
-                loadStudents();
-            });
-        };
+    window.confirmDelete = function () {
+        remove(ref(db, "students/" + document.getElementById("delete-id").value)).then(() => {
+            loadStudents();
+        });
+    };
 
-        // Load Students on Page Load
-        window.onload = loadStudents;
-    </script>
+    window.onload = loadStudents;
+</script>
 
 </body>
 </html>
