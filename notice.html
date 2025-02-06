@@ -150,7 +150,7 @@
         /* Global Styling */
         body {
             font-family: "Caudex", serif;
-            background-color: #f0f4f8;
+            background-color: #dcf0fa;
             color: #333;
             transition: background-color 0.3s ease;
         }
@@ -171,14 +171,14 @@
         }
 
         .card-body {
-            background-color: #ffffff;
+            background-color:#84cdee ;
             border-radius: 10px;
             padding: 25px;
             transition: background-color 0.3s ease;
         }
 
         .card-body:hover {
-            background-color: #f8f9fa;
+            background-color:#84cdee  ;
         }
 
         /* Button Styling */
@@ -229,10 +229,6 @@
         }
 
         /* Dark Mode Styling */
-        body.dark-mode {
-            background-color: #181818;
-            color: #f1f1f1;
-        }
 
         .dark-mode .card-body {
             background-color: #2e2e2e;
@@ -270,7 +266,7 @@
         }
     </style>
 </head>
-<body class="bg-light">
+<body>
 
     <div class="container mt-5">
             <a href="index.html" class="btn btn-primary">DashBoard</a>
@@ -292,14 +288,58 @@
                     <select class="form-control" id="notice-type">
                   <option value="latest">🔥 Latest</option>
                         <option value="important">⭕ Important</option>
-                        <option value="pinned">📢 Pinned</option>
+                        <option value="pinned">📌 Pinned</option>
                     </select>
                 </div>
                 <button class="btn btn-primary" id="add-btn" onclick="addNotice()">Add Notice</button>
                 <button class="btn btn-primary" id="update-btn" onclick="updateNotice()" style="display: none;">Update Notice</button>
+                            <a href="https://imgbb.com/" class="btn btn-primary">IMG link generate</a>
             </div>
         </div>
+   <!-- Red "Live Class" Button with Icon -->
+<div class="container mt-4">
+    <div class="input-group mb-3">
+        <input type="text" id="copyTextButtonWithLiveClass" class="form-control" value='&lt;a href=&quot;https://www.example.com&quot;&gt;&lt;button class=&quot;btn btn-danger&quot;&gt;&lt;i class=&quot;fas fa-video&quot;&gt;&lt;/i&gt; Live Class 🎯&lt;/button&gt;&lt;/a&gt;' readonly>
+        <button class="btn btn-danger" onclick="copyToClipboard('copyTextButtonWithLiveClass')">Live</button>
+    </div>
+</div>     
+<!-- ✅ Copy Text Section -->
+<div class="container mt-4">
+    <!-- Copy anchor tag HTML -->
+    <div class="input-group mb-3">
+        <input type="text" id="copyTextAnchor" class="form-control" value='&lt;a href=&quot;https://www.example.com&quot;&gt;Visit&lt;/a&gt;' readonly>
+        <button class="card text-white bg-success" onclick="copyToClipboard('copyTextAnchor')">Link</button>
+    </div>
+    
+    <!-- Copy button HTML -->
+    <!-- Button with Link -->
+    <div class="input-group mb-3">
+        <input type="text" id="copyTextButtonWithLink" class="form-control" value='&lt;a href=&quot;https://www.example.com&quot;&gt;&lt;button class=&quot;btn btn-success&quot;&gt;Click&lt;/button&gt;&lt;/a&gt;' readonly>
+        <button class="card text-white bg-info" onclick="copyToClipboard('copyTextButtonWithLink')">Button</button>
+    </div>
 
+
+
+</div>
+<div class="container mt-4">
+    <div class="input-group">
+        <input type="text" id="copyText" class="form-control" value="<img src=&quot;(image-url)&quot; width=&quot;100%&quot;>" readonly>
+        <button class="card text-white bg-warning" onclick="copyToClipboard()">Img</button>
+    </div>
+</div>
+<script>
+    function copyToClipboard(inputId) {
+        let copyText = document.getElementById(inputId);
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); // For mobile devices
+        navigator.clipboard.writeText(copyText.value);
+
+        // Show Bootstrap alert modal
+        document.getElementById("alertMessage").textContent = "Copied: " + copyText.value;
+        let alertModal = new bootstrap.Modal(document.getElementById("alertModal"));
+        alertModal.show();
+    }
+</script>
         <h3 class="mt-5">Notice List</h3>
         <ul id="notice-list" class="list-group mt-3"></ul>
     </div>

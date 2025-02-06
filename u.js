@@ -17,30 +17,39 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-        // 🔍 Check Payment Status
-        window.checkPayment = function () {
-            let uniqueId = document.getElementById("unique-id").value.trim();
-            if (!uniqueId) {
-                alert("Please enter a valid Unique ID!");
-                return;
-            }
+// 🔍 Check Payment Status
+window.checkPayment = function () {
+    let uniqueId = document.getElementById("unique-id").value.trim();
+    if (!uniqueId) {
+        showAlert("Please enter a valid Unique ID!", "Invalid Input");
+        return;
+    }
 
-            localStorage.setItem("lastCheckedID", uniqueId);
+    localStorage.setItem("lastCheckedID", uniqueId);
 
-            get(ref(db, "students")).then(snapshot => {
-                let students = snapshot.val() || [];
-                let student = students.find(s => s.uniqueId === uniqueId);
+    get(ref(db, "students")).then(snapshot => {
+        let students = snapshot.val();
+        if (!students) {
+            showAlert("No students found!", "Error");
+            return;
+        }
 
-                if (student) {
-                    document.getElementById("student-name").innerText = student.name;
-                    document.getElementById("student-id").innerText = student.uniqueId;
-                    document.getElementById("student-payment").innerText = student.paymentStatus || "Unpaid";
-                    document.getElementById("payment-details").classList.remove("d-none");
-                } else {
-                    alert("Student not found!");
-                }
-            });
-        };
+        let studentArray = Object.values(students); // Convert object to array
+        let student = studentArray.find(s => s.uniqueId === uniqueId);
+
+        if (student) {
+            document.getElementById("student-name").innerText = student.name;
+            document.getElementById("student-id").innerText = student.uniqueId;
+            document.getElementById("student-payment").innerText = student.paymentStatus || "Unpaid";
+            document.getElementById("payment-details").classList.remove("d-none");
+        } else {
+            showAlert("Student not found!", "Search Result");
+        }
+    }).catch(error => {
+        showAlert("Failed to fetch data! " + error.message, "Error");
+    });
+};
+
 // 📢 Load Notices (Sorted by Date & Time)
 function loadNotices() {
     onValue(ref(db, "notices"), (snapshot) => {
@@ -85,7 +94,7 @@ function saveName() {
         document.getElementById("inputGroup").style.display = "none"; // Hide input after saving
         displayGreeting();
     } else {
-        alert("Please enter a name!");
+        showAlert("Please enter a name!", "Name Required");
     }
 }
 
@@ -93,7 +102,7 @@ function saveName() {
 function displayGreeting() {
     const savedName = localStorage.getItem("userName");
     if (savedName) {
-        document.getElementById("greetingMessage").innerText = `Welcome, ${savedName}!`;
+        document.getElementById("greetingMessage").innerText = `Dear, ${savedName}!`;
         document.getElementById("inputGroup").style.display = "none";
     }
 }
@@ -115,3 +124,11 @@ window.onload = function () {
 
 // Expose saveName function globally
 window.saveName = saveName;
+
+// 🎨 Advanced Bootstrap Alert
+function showAlert(message, title = "Notification") {
+    document.getElementById("alertTitle").innerText = title;
+    document.getElementById("alertMessage").innerText = message;
+    var alertModal = new bootstrap.Modal(document.getElementById("alertModal"));
+    alertModal.show();
+}
