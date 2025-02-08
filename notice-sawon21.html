@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Notice Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, get, set, push, update, remove, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD8SUCRABkNj7cC9_z7beoWVdeivE2vFKs",
+            authDomain: "admition-52c47.firebaseapp.com",
+            databaseURL: "https://admition-52c47-default-rtdb.firebaseio.com",
+            projectId: "admition-52c47",
+            storageBucket: "admition-52c47.appspot.com",
+            messagingSenderId: "1065012142592",
+            appId: "1:1065012142592:web:ea76b942aba95418eb6ee5",
+            measurementId: "G-3N3F8DJ8FC"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // ✅ Add Notice with Timestamp, Headline & Details
+        window.addNotice = function () {
+            let headline = document.getElementById("notice-headline").value.trim();
+            let details = document.getElementById("notice-details").value.trim();
+            let type = document.getElementById("notice-type").value;
+
+            if (!headline || !details) {
+                showMessage("Please enter both headline and details for the notice!", "error");
+                return;
+            }
+
+            const newNoticeRef = push(ref(db, "notices"));
+            set(newNoticeRef, {
+                headline,
+                details,
+                type,
+                timestamp: Date.now()  // Store timestamp
+            });
+
+            showMessage("Notice Added!", "success");
+            document.getElementById("notice-headline").value = "";
+            document.getElementById("notice-details").value = "";
+        };
+
+        // ✅ Load Notices
+        function loadNotices() {
+            onValue(ref(db, "notices"), (snapshot) => {
+                let notices = snapshot.val() || {};
+                displayNotices(notices);
+            });
+        }
+
+        // ✅ Display Notices (Sorted by Latest)
+        function displayNotices(notices) {
+            let noticeContainer = document.getElementById("notice-list");
+            noticeContainer.innerHTML = "";
+
+            // Convert object to array and sort by timestamp (latest first)
+            let sortedNotices = Object.entries(notices)
+                .map(([id, notice]) => ({ id, ...notice }))
+                .sort((a, b) => b.timestamp - a.timestamp);
+
+            sortedNotices.forEach((notice) => {
+                let icon = notice.type === "pinned" ? "📌 Pinned" : notice.type === "latest" ? "🔥 Latest " : "⭕ Important";
+                let date = new Date(notice.timestamp).toLocaleString(); // Convert timestamp to readable format
+
+                let li = `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong><p style="background-color:gold">${icon}</p> ${notice.headline}</strong> <br>
+                            <p>${notice.details}</p>
+                            <small class="text-muted">${date}</small>
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-warning" onclick="editNotice('${notice.id}', '${notice.headline}', '${notice.details}', '${notice.type}')">✏️ Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteNotice('${notice.id}')">🗑 Delete</button>
+                        </div>
+                    </li>`;
+                noticeContainer.innerHTML += li;
+            });
+        }
+
+        // ✅ Edit Notice
+        window.editNotice = function (id, headline, details, type) {
+            document.getElementById("notice-headline").value = headline;
+            document.getElementById("notice-details").value = details;
+            document.getElementById("notice-type").value = type;
+            document.getElementById("update-btn").style.display = "inline-block";
+            document.getElementById("add-btn").style.display = "none";
+
+            window.updateNoticeId = id;  // Store notice id for updating
+        };
+
+        // ✅ Update Notice
+        window.updateNotice = function () {
+            let headline = document.getElementById("notice-headline").value.trim();
+            let details = document.getElementById("notice-details").value.trim();
+            let type = document.getElementById("notice-type").value;
+
+            if (!headline || !details || !window.updateNoticeId) return;
+
+            update(ref(db, "notices/" + window.updateNoticeId), { headline, details, type });
+
+            showMessage("Notice Updated!", "success");
+            document.getElementById("notice-headline").value = "";
+            document.getElementById("notice-details").value = "";
+            document.getElementById("update-btn").style.display = "none";
+            document.getElementById("add-btn").style.display = "inline-block";
+            window.updateNoticeId = null; // Clear the stored id after updating
+        };
+
+        // ✅ Delete Notice
+        window.deleteNotice = function (id) {
+            if (confirm("Are you sure you want to delete this notice?")) {
+                remove(ref(db, "notices/" + id));
+                showMessage("Notice Deleted!", "success");
+            }
+        };
+
+        // ✅ Show Custom Message
+        function showMessage(message, type) {
+            let msg = document.createElement('div');
+            msg.classList.add('alert-module', type === 'success' ? 'alert-module-success' : 'alert-module-error');
+            msg.textContent = message;
+            document.body.appendChild(msg);
+            msg.style.display = 'block';
+            setTimeout(() => msg.style.display = 'none', 3000);
+        }
+
+        // ✅ Load Notices & Dark Mode on Page Load
+        window.onload = function () {
+            if (localStorage.getItem("darkMode") === "true") {
+                document.body.classList.add("dark-mode");
+            }
+            loadNotices();
+        };
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Caudex:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+        /* Global Styling */
+        body {
+            font-family: "Caudex", serif;
+            background-color: #dcf0fa;
+            color: #333;
+            transition: background-color 0.3s ease;
+        }
+        h2 {
+            color: #0d6efd;
+            font-weight: bold;
+        }
+
+        /* Card Styling */
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-body {
+            background-color:#84cdee ;
+            border-radius: 10px;
+            padding: 25px;
+            transition: background-color 0.3s ease;
+        }
+
+        .card-body:hover {
+            background-color:#84cdee  ;
+        }
+
+        /* Button Styling */
+        .btn-outline-primary {
+            font-weight: bold;
+            border: 2px solid #0d6efd;
+            color: #0d6efd;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #0d6efd;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Input & Search */
+        .input-group-text, .form-control {
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .input-group-text {
+            background-color: #f1f3f5;
+        }
+
+        .form-control:focus, .input-group-text:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 8px rgba(13, 110, 253, 0.4);
+        }
+
+        #notice-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Hover Effects for List Items */
+        .list-group-item {
+            border-radius: 10px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .list-group-item:hover {
+            background-color: #e7f1ff;
+            transform: scale(1.03);
+            font-size: 20px;
+        }
+
+        /* Dark Mode Styling */
+
+        .dark-mode .card-body {
+            background-color: #2e2e2e;
+        }
+
+        /* Custom Smart Message */
+        .alert-module {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 400px;
+            border-radius: 10px;
+            padding: 15px;
+            background-color: #0d6efd;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s ease-out;
+        }
+
+        .alert-module-success {
+            background-color: #28a745;
+        }
+
+        .alert-module-error {
+            background-color: #dc3545;
+        }
+
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container mt-5">
+            <a href="index.html" class="btn btn-primary">DashBoard</a>
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>Admin - Notice Management</h2>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Add / Update Notice</h5>
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="notice-headline" placeholder="Enter notice headline">
+                </div>
+                <div class="mb-3">
+                    <textarea class="form-control" id="notice-details" rows="6" placeholder="Enter notice details"></textarea>
+                </div>
+                <div class="mb-3">
+                  <p>Select Notice Type *</p>
+                    <select class="form-control" id="notice-type">
+                  <option value="latest">🔥 Latest</option>
+                        <option value="important">⭕ Important</option>
+                        <option value="pinned">📌 Pinned</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" id="add-btn" onclick="addNotice()">Add Notice</button>
+                <button class="btn btn-primary" id="update-btn" onclick="updateNotice()" style="display: none;">Update Notice</button>
+                            <a href="https://imgbb.com/" class="btn btn-primary">IMG link generate</a>
+            </div>
+        </div>
+   <!-- Red "Live Class" Button with Icon -->
+<div class="container mt-4">
+    <div class="input-group mb-3">
+        <input type="text" id="copyTextButtonWithLiveClass" class="form-control" value='&lt;a href=&quot;https://www.example.com&quot;&gt;&lt;button class=&quot;btn btn-danger&quot;&gt;&lt;i class=&quot;fas fa-video&quot;&gt;&lt;/i&gt; Live Class 🎯&lt;/button&gt;&lt;/a&gt;' readonly>
+        <button class="btn btn-danger" onclick="copyToClipboard('copyTextButtonWithLiveClass')">Live</button>
+    </div>
+</div>     
+<!-- ✅ Copy Text Section -->
+<div class="container mt-4">
+    <!-- Copy anchor tag HTML -->
+    <div class="input-group mb-3">
+        <input type="text" id="copyTextAnchor" class="form-control" value='&lt;a href=&quot;https://www.example.com&quot;&gt;Visit&lt;/a&gt;' readonly>
+        <button class="card text-white bg-success" onclick="copyToClipboard('copyTextAnchor')">Link</button>
+    </div>
+    
+    <!-- Copy button HTML -->
+    <!-- Button with Link -->
+    <div class="input-group mb-3">
+        <input type="text" id="copyTextButtonWithLink" class="form-control" value='&lt;a href=&quot;https://www.example.com&quot;&gt;&lt;button class=&quot;btn btn-success&quot;&gt;Click&lt;/button&gt;&lt;/a&gt;' readonly>
+        <button class="card text-white bg-info" onclick="copyToClipboard('copyTextButtonWithLink')">Button</button>
+    </div>
+
+    <div class="input-group mb-3">
+        <input type="text" id="copyText" class="form-control" value='<img src=&quot;(image-url)&quot; width=&quot;100%&quot;>' readonly>
+        <button class="card text-white bg-warning" onclick="copyToClipboard('copyText')">Img</button>
+    </div>
+
+</div>
+<script>
+    function copyToClipboard(inputId) {
+        let copyText = document.getElementById(inputId);
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); // For mobile devices
+        navigator.clipboard.writeText(copyText.value);
+
+        // Show Bootstrap alert modal
+        document.getElementById("alertMessage").textContent = "Copied: " + copyText.value;
+        let alertModal = new bootstrap.Modal(document.getElementById("alertModal"));
+        alertModal.show();
+    }
+</script>
+        <h3 class="mt-5">Notice List</h3>
+        <ul id="notice-list" class="list-group mt-3"></ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
